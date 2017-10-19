@@ -29,7 +29,8 @@ Copy `Simplogger.php` to a directory of your choice and import it.
 === Log to local syslog
 
   $ident = 'my-program-name';
-  $logger = new \Simplogger\SyslogLogger($ident, LOG_CONS, LOG_LOCAL1);
+  $facility = LOG_LOCAL1;
+  $logger = new \Simplogger\SyslogLogger($ident, LOG_CONS, $facility);
 
 `SyslogLogger` logs using PHP's `http://php.net/manual/en/function.syslog.php[syslog()]`
 function, and parameters are the same as passed to
@@ -38,7 +39,8 @@ function, and parameters are the same as passed to
 === Log to remote syslogd via UDP
 
   $syslogHost = 192.0.2.22;
-  $logger = new \Simplogger\RemoteSysLogger($ident, LOG_LOCAL1, $syslogHost, 514);
+  $syslogPort = 514;
+  $logger = new \Simplogger\RemoteSysLogger($ident, $facility, $syslogHost, $syslogPort);
 
 `RemoteSysLogger` sends all messages to syslogd over UDP.
 Default host is `127.0.0.1`, default port number is 514.
