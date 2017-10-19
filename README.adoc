@@ -37,11 +37,11 @@ function, and parameters are the same as passed to
 
 === Log to remote syslogd via UDP
 
-  $syslogHost = 10.11.12.13;
+  $syslogHost = 192.0.2.22;
   $logger = new \Simplogger\RemoteSysLogger($ident, LOG_LOCAL1, $syslogHost, 514);
 
 `RemoteSysLogger` sends all messages to syslogd over UDP.
-Default host is `127.0.0.1`, default port is `514`.
+Default host is `127.0.0.1`, default port number is 514.
 
 === Log to stdout/stderr
 
