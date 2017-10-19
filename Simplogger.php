@@ -186,7 +186,7 @@ class FileLogger extends Logger {
   }
 
   function __destruct() {
-    $this->debug('Destroying FileLogger instance...');
+    $this->debug('Destroying FileLogger instance');
     fclose($this->stream);
   }
 
@@ -215,7 +215,7 @@ class SyslogLogger extends Logger {
   }
 
   function __destruct() {
-    $this->debug('Destroying SyslogLogger instance...');
+    $this->debug('Destroying SyslogLogger instance');
     closelog();
   }
 
@@ -246,19 +246,23 @@ class RemoteSysLogger extends Logger {
     $this->facility = $facility;
     $this->host = $host;
     $this->port = $port;
+    $this->sock = socket_create(AF_INET, SOCK_DGRAM, SOL_UDP);
+  }
+
+  function __destruct() {
+    $this->debug('Destroying RemoteSysLogger instance');
+    socket_close($this->sock);
   }
 
   public function log(int $priority, string $message): bool {
     $r = FALSE;
-    $sock = socket_create(AF_INET, SOCK_DGRAM, SOL_UDP);
     foreach (explode(PHP_EOL, $message) as $line) {
       $syslog_message = '<' . ($this->facility * 8 + $priority) . '>'
          . date('M d H:i:s ')
          . gethostname() . ' '
          . $this->ident . ': ' . $line;
-      $r = socket_sendto($sock, $syslog_message, strlen($syslog_message), 0, $this->host, $this->port);
+      $r = socket_sendto($this->sock, $syslog_message, strlen($syslog_message), 0, $this->host, $this->port);
     }
-    socket_close($sock);
     return $r;
   }
 }
