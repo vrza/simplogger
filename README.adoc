@@ -30,7 +30,8 @@ Copy `Simplogger.php` to a directory of your choice and import it.
 
   $ident = 'my-program-name';
   $facility = LOG_LOCAL1;
-  $logger = new \Simplogger\SyslogLogger($ident, LOG_CONS, $facility);
+  $options = LOG_CONS;
+  $logger = new \Simplogger\SyslogLogger($ident, $options, $facility);
 
 `SyslogLogger` logs using PHP's `http://php.net/manual/en/function.syslog.php[syslog()]`
 function, and parameters are the same as passed to
