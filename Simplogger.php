@@ -232,7 +232,7 @@ class SyslogLogger extends Logger {
  *
  *  new SyslogLogger ( string $ident, int $facility, string $host, int $port )
  *
- *  For full documentation on $facility, see RFC 3164
+ *  For full documentation on $facility, see RFC 5424
  */
 class RemoteSysLogger extends Logger {
  /**
