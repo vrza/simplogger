@@ -36,17 +36,21 @@ abstract class Logger {
 
   protected function write($fp, string $message, int $priority): int {
     // prepend any optional prefixes
+    $prefix = ''; $sep = '';
     if ($this->timestamp) {
-      $prefix = date('Y-m-d H:i:s ', time());
-      $prefix .= gethostname();
-      if (!empty($this->ident)) {
-        $prefix .= " $this->ident";
-      }
-      if ($this->priority) {
-        $prefix .= ' ' . self::PRIORITIES[$priority];
-      }
-      $message = "$prefix: $message";
+      $prefix .= $sep . date('Y-m-d H:i:s', time());
+      $sep = ' ';
     }
+    if (!empty($this->ident)) {
+      $prefix .= $sep . gethostname();
+      $sep = ' ';
+      $prefix .= $sep . '[' . $this->ident . ']';
+    }
+    if ($this->priority) {
+      $prefix .= $sep . self::PRIORITIES[$priority];
+      $sep = ' ';
+    }
+    $message = "$prefix$sep$message";
     // ensure line terminator
     if (strlen($message) < strlen(PHP_EOL) or
         substr_compare($message, PHP_EOL, -strlen(PHP_EOL)) !== 0) {
@@ -118,20 +122,20 @@ abstract class Logger {
 abstract class StdstreamLogger extends Logger {
  /**
   *  @param bool   $timestamp  If TRUE, timestamp string is added to each message.
-  *  @param string $ident      If not empty, string $ident is added to each message.
   *  @param bool   $priority   If TRUE, priority string is added to each message.
+  *  @param string $ident      If not empty, "hostname [ident]" is added to each message.
   */
-  function __construct(bool $timestamp = FALSE, string $ident = '', bool $priority = FALSE) {
+  function __construct(bool $timestamp = FALSE, bool $priority = FALSE, string $ident = '') {
     $this->timestamp = $timestamp;
-    $this->ident = $ident;
     $this->priority = $priority;
+    $this->ident = $ident;
   }
 }
 
 /**
  *  Logger that writes all messages to stdout 
  * 
- *  new StdoutLogger ( bool $timestamp, string $ident, bool $priority )
+ *  new StdoutLogger ( bool $timestamp, bool $priority, string $ident )
  */
 class StdoutLogger extends StdstreamLogger {
   public function log(int $priority, string $message): bool {
@@ -142,7 +146,7 @@ class StdoutLogger extends StdstreamLogger {
 /**
  *  Logger that writes all messages to stderr 
  * 
- *  new StderrLogger ( bool $timestamp, string $ident, bool $priority )
+ *  new StderrLogger ( bool $timestamp, bool $priority, string $ident )
  */
 class StderrLogger extends StdstreamLogger {
   public function log(int $priority, string $message): bool {
@@ -154,7 +158,7 @@ class StderrLogger extends StdstreamLogger {
  *  Logger that logs high priority messages (warnings and higher) to stderr
  *  while logging lower priority messages to stdout.
  *
- *  new StdouterrLogger ( bool $timestamp, string $ident, bool $priority )
+ *  new StdouterrLogger ( bool $timestamp, bool $priority, string $ident )
  */
 class StdouterrLogger extends StdstreamLogger {
   public function log(int $priority, string $message): bool {
@@ -166,19 +170,19 @@ class StdouterrLogger extends StdstreamLogger {
 /**
  *  Logger that appends all messages to a file
  *  
- *  new FileLogger ( string $file, bool $timestamp, string $ident )
+ *  new FileLogger ( string $file, bool $timestamp, bool $priority, string $ident )
  */
 class FileLogger extends Logger {
  /**
   *  @param string $file       Append to log file $file.
   *  @param bool   $timestamp  If TRUE, timestamp is added to each message.
-  *  @param string $ident      If not empty, string $ident is added to each message.
   *  @param bool   $priority   If TRUE, priority string is added to each message.
+  *  @param string $ident      If not empty, "hostname [ident]" is added to each message.
   */
-  function __construct(string $file, bool $timestamp = FALSE, string $ident = '', bool $priority = FALSE) {
+  function __construct(string $file, bool $timestamp = FALSE, bool $priority = FALSE, string $ident = '') {
     $this->timestamp = $timestamp;
-    $this->ident = $ident;
     $this->priority = $priority;
+    $this->ident = $ident;
     $this->stream = fopen($file, 'a');
   }
 

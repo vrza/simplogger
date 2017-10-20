@@ -7,11 +7,15 @@
 The goal of Simplogger is to provide a logging utility for PHP that is
 lightweight, simple to use, and simple to integrate.
 
-Simplogger can log to stdout/stderr, to local syslogd (via /dev/log,
-using PHP's built-in syslog functions) or to remote syslogd (via UDP).
+Simplogger can log to:
 
-Typical use case is a PHP microservice that logs to syslog when
-deployed, but can just as easily use stdout/stderr (e.g. in the
+* stdout/stderr
+* local syslogd (/dev/log)
+* remote syslogd (UDP)
+* file
+
+Typical use case is a PHP microservice that uses syslogd for logging
+when deployed, but can just as easily use stdout/stderr (e.g. in the
 development environment).
 
 [source,php]
@@ -44,8 +48,9 @@ $options = LOG_CONS | LOG_PID;
 $logger = new \Simplogger\SyslogLogger($ident, $options, $facility);
 ----
 
-`SyslogLogger` logs using PHP's `http://php.net/manual/en/function.syslog.php[syslog()]`
-function, and parameters are the same as passed to
+`SyslogLogger` logs using PHP's
+`http://php.net/manual/en/function.syslog.php[syslog()]`
+function. Parameters are the same as passed to
 `http://php.net/manual/en/function.openlog.php[openlog()]`.
 
 === Log to remote syslogd via UDP
@@ -81,7 +86,7 @@ timestamp, ident and severity with each message:
 ----
 $timestamp = TRUE;
 $severity = TRUE;
-$logger = new \Simplogger\StdoutLogger($timestamp, $ident, $severity);
+$logger = new \Simplogger\StdoutLogger($timestamp, $severity, $ident);
 ----
 
 === Log to file
@@ -99,7 +104,7 @@ timestamp, ident and severity with each message.
 
 [source,php]
 ----
-$logger = new \Simplogger\FileLogger($logFile, $timestamp, $ident, $severity);
+$logger = new \Simplogger\FileLogger($logFile, $timestamp, $severity, $ident);
 ----
 
 == Usage
