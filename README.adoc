@@ -1,3 +1,5 @@
+:source-highlighter: pygments
+
 = Simplogger: Simple PHP logging utility
 
 == Overview
@@ -12,26 +14,35 @@ Typical use case is a PHP microservice that logs to syslog when
 deployed, but can just as easily use stdout/stderr (e.g. in the
 development environment).
 
-  require('Simplogger.php');
-  $ident = basename($argv[0]);
-  $opts = getopt('s', ['syslog']);
-  $logger = array_key_exists('s', $opts) || array_key_exists('syslog', $opts)
-    ? new \Simplogger\SyslogLogger($ident, LOG_CONS, LOG_LOCAL1) 
-    : new \Simplogger\StdoutLogger;
-  $logger->notice('Hello world!');
+[source,php]
+----
+require('Simplogger.php');
+$ident = basename($argv[0]);
+$opts = getopt('s', ['syslog']);
+$logger = array_key_exists('s', $opts) || array_key_exists('syslog', $opts)
+  ? new \Simplogger\SyslogLogger($ident, LOG_CONS, LOG_LOCAL1) 
+  : new \Simplogger\StdoutLogger;
+$logger->notice('Hello world!');
+----
 
 == Setup
 
 Copy `Simplogger.php` to a directory of your choice and import it.
 
-  require('Simplogger.php');
+[source,php]
+----
+require('Simplogger.php');
+----
 
 === Log to local syslog
 
-  $ident = 'my-program-name';
-  $facility = LOG_LOCAL1;
-  $options = LOG_CONS | LOG_PID;
-  $logger = new \Simplogger\SyslogLogger($ident, $options, $facility);
+[source,php]
+----
+$ident = 'my-program-name';
+$facility = LOG_LOCAL1;
+$options = LOG_CONS | LOG_PID;
+$logger = new \Simplogger\SyslogLogger($ident, $options, $facility);
+----
 
 `SyslogLogger` logs using PHP's `http://php.net/manual/en/function.syslog.php[syslog()]`
 function, and parameters are the same as passed to
@@ -39,16 +50,22 @@ function, and parameters are the same as passed to
 
 === Log to remote syslogd via UDP
 
-  $syslogHost = 192.0.2.22;
-  $syslogPort = 514;
-  $logger = new \Simplogger\RemoteSysLogger($ident, $facility, $syslogHost, $syslogPort);
+[source,php]
+----
+$syslogHost = 192.0.2.22;
+$syslogPort = 514;
+$logger = new \Simplogger\RemoteSysLogger($ident, $facility, $syslogHost, $syslogPort);
+----
 
 `RemoteSysLogger` sends all messages to syslogd over UDP.
 Default host is `127.0.0.1`, default port number is 514.
 
 === Log to stdout/stderr
 
-  $logger = new \Simplogger\StdoutLogger;
+[source,php]
+----
+$logger = new \Simplogger\StdoutLogger;
+----
 
 `StdoutLogger` writes all messages to stdout.
 
@@ -60,29 +77,40 @@ writes other messages to stdout.
 These loggers can be optionally set up to include
 timestamp, ident and severity with each message:
 
-  $timestamp = TRUE;
-  $severity = TRUE;
-  $logger = new \Simplogger\StdoutLogger($timestamp, $ident, $severity);
+[source,php]
+----
+$timestamp = TRUE;
+$severity = TRUE;
+$logger = new \Simplogger\StdoutLogger($timestamp, $ident, $severity);
+----
 
 === Log to file
 
-  $logFile = '/var/log/my.log';
-  $logger = new \Simplogger\FileLogger($logFile);
+[source,php]
+----
+$logFile = '/var/log/my.log';
+$logger = new \Simplogger\FileLogger($logFile);
+----
 
 `FileLogger` writes all messages to a given file.
 
 Like the stdout/stderr loggers, `FileLogger` has an option to include
 timestamp, ident and severity with each message.
 
-  $logger = new \Simplogger\FileLogger($logFile, $timestamp, $ident, $severity);
+[source,php]
+----
+$logger = new \Simplogger\FileLogger($logFile, $timestamp, $ident, $severity);
+----
 
 == Usage
 
-  $logger->alert('A message with ALERT severity');
-  $logger->crit('A message with CRIT severity');
-  $logger->err('A message with ERR severity');
-  $logger->warning('A message with WARNING severity');
-  $logger->notice('A message with NOTICE severity');
-  $logger->info('A message with INFO severity');
-  $logger->debug('A messsage with DEBUG severity');
-
+[source,php]
+----
+$logger->alert('A message with ALERT severity');
+$logger->crit('A message with CRIT severity');
+$logger->err('A message with ERR severity');
+$logger->warning('A message with WARNING severity');
+$logger->notice('A message with NOTICE severity');
+$logger->info('A message with INFO severity');
+$logger->debug('A messsage with DEBUG severity');
+----
