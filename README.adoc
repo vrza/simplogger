@@ -44,7 +44,7 @@ require('Simplogger.php');
 ----
 $ident = 'my-program-name';
 $facility = LOG_LOCAL1;
-$options = LOG_CONS | LOG_PID;
+$options = LOG_CONS;
 $logger = new \Simplogger\SyslogLogger($ident, $options, $facility);
 ----
 
