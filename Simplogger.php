@@ -34,39 +34,14 @@ abstract class Logger {
   protected $ident = '';
   protected $priority = FALSE;
 
-  protected function write($fp, string $message, int $priority): int {
-    // prepend any optional prefixes
-    $prefix = ''; $sep = '';
-    if ($this->timestamp) {
-      $prefix .= $sep . date('Y-m-d H:i:s', time());
-      $sep = ' ';
-    }
-    if (!empty($this->ident)) {
-      $prefix .= $sep . gethostname();
-      $sep = ' ';
-      $prefix .= $sep . '[' . $this->ident . ']';
-    }
-    if ($this->priority) {
-      $prefix .= $sep . self::PRIORITIES[$priority];
-      $sep = ' ';
-    }
-    $message = "$prefix$sep$message";
-    // ensure line terminator
-    if (strlen($message) < strlen(PHP_EOL) or
-        substr_compare($message, PHP_EOL, -strlen(PHP_EOL)) !== 0) {
-      $message .= PHP_EOL;
-    }
-    return fwrite($fp, $message);
-  }
 
-  protected function writemultiline($fp, string $message, int $priority): int {
-    $r = FALSE;
-    foreach (explode(PHP_EOL, $message) as $line) {
-      $r = $this->write($fp, $line, $priority);
-    }
-    return $r;
-  }
-  
+ /**
+  *  Concrete loggers must implement
+  *  log ( $priority, $message )
+  *
+  *  @param int    $priority  Message priority
+  *  @param string $message   Message string
+  */
   abstract public function log(int $priority, string $message): bool;
 
   public function emerg(string $message): bool {
@@ -113,6 +88,40 @@ abstract class Logger {
 
   public function warn(string $message): bool {
     return $this->warning($message);
+  }
+
+
+  protected function write($fp, string $message, int $priority): int {
+    // prepend any optional prefixes
+    $prefix = ''; $sep = '';
+    if ($this->timestamp) {
+      $prefix .= $sep . date('Y-m-d H:i:s', time());
+      $sep = ' ';
+    }
+    if (!empty($this->ident)) {
+      $prefix .= $sep . gethostname();
+      $sep = ' ';
+      $prefix .= $sep . '[' . $this->ident . ']';
+    }
+    if ($this->priority) {
+      $prefix .= $sep . self::PRIORITIES[$priority];
+      $sep = ' ';
+    }
+    $message = "$prefix$sep$message";
+    // ensure line terminator
+    if (strlen($message) < strlen(PHP_EOL) or
+        substr_compare($message, PHP_EOL, -strlen(PHP_EOL)) !== 0) {
+      $message .= PHP_EOL;
+    }
+    return fwrite($fp, $message);
+  }
+
+  protected function writemultiline($fp, string $message, int $priority): int {
+    $r = FALSE;
+    foreach (explode(PHP_EOL, $message) as $line) {
+      $r = $this->write($fp, $line, $priority);
+    }
+    return $r;
   }
 }
 
