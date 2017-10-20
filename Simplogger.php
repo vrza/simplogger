@@ -158,11 +158,8 @@ class StderrLogger extends StdstreamLogger {
  */
 class StdouterrLogger extends StdstreamLogger {
   public function log(int $priority, string $message): bool {
-    if ($priority <= LOG_WARNING) {
-      return $this->writemultiline(STDERR, $message, $priority);
-    } else {
-      return $this->writemultiline(STDOUT, $message, $priority);
-    }
+    $fp = $priority <= LOG_WARNING ? STDERR : STDOUT;
+    return $this->writemultiline($fp, $message, $priority);
   }
 }
 
