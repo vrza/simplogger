@@ -1,0 +1,19 @@
+{
+    "name": "simplogger/simplogger",
+    "type": "library",
+    "description": "Lightweight PHP logging library",
+    "keywords": ["log","logging"],
+    "homepage": "https://github.com/vrza/simplogger/",
+    "license": "Apache-2.0",
+    "authors": [
+        {
+            "name": "Vladimir Vrzić",
+            "email": "vvrzic@gmail.com",
+            "homepage": "https://github.com/vrza/",
+            "role": "Developer"
+        }
+    ],
+    "require": {
+        "php": "^7.0"
+    }
+}
