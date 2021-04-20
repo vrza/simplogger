@@ -1,6 +1,6 @@
 <?php
-/* 
-   Copyright 2017 Vladimir Vrzić
+/*
+   Copyright 2017-2021 Vladimir Vrzić
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -142,8 +142,8 @@ abstract class StdstreamLogger extends Logger {
 }
 
 /**
- *  Logger that writes all messages to stdout 
- * 
+ *  Logger that writes all messages to stdout
+ *
  *  new StdoutLogger ( bool $timestamp, bool $priority, string $ident )
  */
 class StdoutLogger extends StdstreamLogger {
@@ -153,8 +153,8 @@ class StdoutLogger extends StdstreamLogger {
 }
 
 /**
- *  Logger that writes all messages to stderr 
- * 
+ *  Logger that writes all messages to stderr
+ *
  *  new StderrLogger ( bool $timestamp, bool $priority, string $ident )
  */
 class StderrLogger extends StdstreamLogger {
@@ -178,7 +178,7 @@ class StdouterrLogger extends StdstreamLogger {
 
 /**
  *  Logger that appends all messages to a file
- *  
+ *
  *  new FileLogger ( string $file, bool $timestamp, bool $priority, string $ident )
  */
 class FileLogger extends Logger {
