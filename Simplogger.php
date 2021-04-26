@@ -15,7 +15,7 @@
    limitations under the License.
 */
 
-namespace VladimirVrzic\Simplogger;
+namespace Simplogger;
 
 abstract class Logger {
   const PRIORITIES = [
