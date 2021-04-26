@@ -26,7 +26,7 @@ use \VladimirVrzic\Simplogger\SyslogLogger;
 $ident = basename($argv[0]);
 $opts = getopt('s', ['syslog']);
 $logger = array_key_exists('s', $opts) || array_key_exists('syslog', $opts)
-  ? new SyslogLogger($ident, LOG_CONS, LOG_LOCAL1) 
+  ? new SyslogLogger($ident, LOG_CONS, LOG_LOCAL1)
   : new StdoutLogger;
 $logger->notice('Hello world!');
 ----
