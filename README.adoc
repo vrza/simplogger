@@ -44,7 +44,7 @@ Add the following to your `composer.json`:
          }
     ],
     "require": {
-        "vrza/simplogger": "dev-psr-4"
+        "vrza/simplogger": "dev-master"
     }
 ----
 
