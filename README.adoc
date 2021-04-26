@@ -20,22 +20,32 @@ development environment).
 
 [source,php]
 ----
-require('Simplogger.php');
+use \VladimirVrzic\Simplogger\StdouterrLogger;
+use \VladimirVrzic\Simplogger\SyslogLogger;
+
 $ident = basename($argv[0]);
 $opts = getopt('s', ['syslog']);
 $logger = array_key_exists('s', $opts) || array_key_exists('syslog', $opts)
-  ? new \Simplogger\SyslogLogger($ident, LOG_CONS, LOG_LOCAL1) 
-  : new \Simplogger\StdoutLogger;
+  ? new SyslogLogger($ident, LOG_CONS, LOG_LOCAL1)
+  : new StdoutLogger;
 $logger->notice('Hello world!');
 ----
 
 == Setup
 
-Copy `Simplogger.php` to a directory of your choice and import it.
+Add the following to your `composer.json`:
 
 [source,php]
 ----
-require('Simplogger.php');
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "https://github.com/vrza/simplogger"
+         }
+    ],
+    "require": {
+        "vrza/simplogger": "dev-psr-4"
+    }
 ----
 
 === Log to local syslog
@@ -45,7 +55,7 @@ require('Simplogger.php');
 $ident = 'my-program-name';
 $facility = LOG_LOCAL1;
 $options = LOG_CONS;
-$logger = new \Simplogger\SyslogLogger($ident, $options, $facility);
+$logger = new SyslogLogger($ident, $options, $facility);
 ----
 
 `SyslogLogger` logs using PHP's
@@ -59,7 +69,7 @@ function. Parameters are the same as passed to
 ----
 $syslogHost = 192.0.2.22;
 $syslogPort = 514;
-$logger = new \Simplogger\RemoteSysLogger($ident, $facility, $syslogHost, $syslogPort);
+$logger = new RemoteSysLogger($ident, $facility, $syslogHost, $syslogPort);
 ----
 
 `RemoteSysLogger` sends all messages to syslogd over UDP.
@@ -69,7 +79,7 @@ Default host is `127.0.0.1`, default port number is 514.
 
 [source,php]
 ----
-$logger = new \Simplogger\StdoutLogger;
+$logger = new StdoutLogger;
 ----
 
 `StdoutLogger` writes all messages to stdout.
@@ -86,7 +96,7 @@ timestamp, ident and severity with each message:
 ----
 $timestamp = TRUE;
 $severity = TRUE;
-$logger = new \Simplogger\StdoutLogger($timestamp, $severity, $ident);
+$logger = new StdoutLogger($timestamp, $severity, $ident);
 ----
 
 === Log to file
@@ -94,7 +104,7 @@ $logger = new \Simplogger\StdoutLogger($timestamp, $severity, $ident);
 [source,php]
 ----
 $logFile = '/var/log/my.log';
-$logger = new \Simplogger\FileLogger($logFile);
+$logger = new FileLogger($logFile);
 ----
 
 `FileLogger` writes all messages to a given file.
@@ -104,7 +114,7 @@ timestamp, ident and severity with each message.
 
 [source,php]
 ----
-$logger = new \Simplogger\FileLogger($logFile, $timestamp, $severity, $ident);
+$logger = new FileLogger($logFile, $timestamp, $severity, $ident);
 ----
 
 == Usage
