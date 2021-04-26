@@ -2,7 +2,7 @@
     "name": "vrza/simplogger",
     "type": "library",
     "description": "Lightweight PHP logging library",
-    "keywords": ["log","logging"],
+    "keywords": ["log", "logging"],
     "homepage": "https://github.com/vrza/simplogger/",
     "license": "Apache-2.0",
     "authors": [
