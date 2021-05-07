@@ -25,26 +25,31 @@ namespace VladimirVrzic\Simplogger;
  *  For full documentation on $option and $facility, see
  *  http://php.net/manual/en/function.openlog.php
  */
-class SyslogLogger extends Logger {
- /**
-  *  @param string $ident     The string $ident is added to each message.
-  *  @param int    $option    Logging options.
-  *  @param int    $facility  What type of program is logging the message.
-  */
-  function __construct(string $ident, int $option, int $facility) {
-    $this->ident = $ident;
-    openlog($ident, $option, $facility);
-  }
+class SyslogLogger extends Logger
+{
+    /**
+     * @param string $ident The string $ident is added to each message.
+     * @param int $option Logging options.
+     * @param int $facility What type of program is logging the message.
+     */
+    function __construct(string $ident, int $option, int $facility)
+    {
+        $this->ident = $ident;
+        openlog($ident, $option, $facility);
+    }
 
-  function __destruct() {
-    $this->debug('Destroying SyslogLogger instance');
-    closelog();
-  }
+    function __destruct()
+    {
+        $this->debug('Destroying SyslogLogger instance');
+        closelog();
+    }
 
-  public function log(int $severity, string $message): bool {
-    $r = false;
-    foreach (explode(PHP_EOL, $message) as $line)
-      $r = syslog($severity, $line);
-    return $r;
-  }
+    public function log(int $severity, string $message): bool
+    {
+        $r = false;
+        foreach (explode(PHP_EOL, $message) as $line) {
+            $r = syslog($severity, $line);
+        }
+        return $r;
+    }
 }
