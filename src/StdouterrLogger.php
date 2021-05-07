@@ -18,14 +18,36 @@
 namespace VladimirVrzic\Simplogger;
 
 /**
- *  Logger that logs high priority messages (warnings and higher) to stderr
- *  while logging lower priority messages to stdout.
+ *  Logger that logs high severity messages (warnings and higher by default)
+ *  to stderr while logging lower severity messages to stdout.
  *
- *  new StdouterrLogger ( bool $timestamp, bool $priority, string $ident )
+ *  new StdouterrLogger ( int $stderrSeverity, bool $includeTimestamp, bool $includeSeverity, string $ident )
  */
-class StdouterrLogger extends StdstreamLogger {
-  public function log(int $priority, string $message): bool {
-    $fp = $priority <= LOG_WARNING ? STDERR : STDOUT;
-    return $this->writemultiline($fp, $message, $priority);
-  }
+class StdouterrLogger extends Logger
+{
+    private $stderrSeverity = LOG_WARNING;
+
+    /**
+     * @param int $stderrSeverity Messages at this and higher severity will go to stderr.
+     * @param bool $includeTimestamp If TRUE, timestamp string is added to each message.
+     * @param bool $includeSeverity If TRUE, severity string is added to each message.
+     * @param string $ident If not empty, "hostname [ident]" is added to each message.
+     */
+    function __construct(
+        int $stderrSeverity = LOG_WARNING,
+        bool $includeTimestamp = false,
+        bool $includeSeverity = false,
+        string $ident = ''
+    ) {
+        $this->stderrSeverity = $stderrSeverity;
+        $this->includeTimestamp = $includeTimestamp;
+        $this->includeSeverity = $includeSeverity;
+        $this->ident = $ident;
+    }
+
+    public function log(int $severity, string $message): bool
+    {
+        $fp = $severity <= $this->stderrSeverity ? STDERR : STDOUT;
+        return $this->writemultiline($fp, $message, $severity);
+    }
 }

@@ -19,29 +19,33 @@ namespace VladimirVrzic\Simplogger;
 
 /**
  *  Logger that appends all messages to a file
- *  
- *  new FileLogger ( string $file, bool $timestamp, bool $priority, string $ident )
+ *
+ *  new FileLogger ( string $file, bool $includeTimestamp, bool $includeSeverity, string $ident )
  */
-class FileLogger extends Logger {
- /**
-  *  @param string $file       Append to log file $file.
-  *  @param bool   $timestamp  If TRUE, timestamp is added to each message.
-  *  @param bool   $priority   If TRUE, priority string is added to each message.
-  *  @param string $ident      If not empty, "hostname [ident]" is added to each message.
-  */
-  function __construct(string $file, bool $timestamp = FALSE, bool $priority = FALSE, string $ident = '') {
-    $this->timestamp = $timestamp;
-    $this->priority = $priority;
-    $this->ident = $ident;
-    $this->stream = fopen($file, 'a');
-  }
+class FileLogger extends Logger
+{
+    /**
+     * @param string $file Append to log file $file.
+     * @param bool $includeTimestamp If TRUE, timestamp is added to each message.
+     * @param bool $includeSeverity If TRUE, severity string is added to each message.
+     * @param string $ident If not empty, "hostname [ident]" is added to each message.
+     */
+    function __construct(string $file, bool $includeTimestamp = false, bool $includeSeverity = false, string $ident = '')
+    {
+        $this->includeTimestamp = $includeTimestamp;
+        $this->includeSeverity = $includeSeverity;
+        $this->ident = $ident;
+        $this->stream = fopen($file, 'a');
+    }
 
-  function __destruct() {
-    $this->debug('Destroying FileLogger instance');
-    fclose($this->stream);
-  }
+    function __destruct()
+    {
+        $this->debug('Destroying FileLogger instance');
+        fclose($this->stream);
+    }
 
-  public function log(int $priority, string $message): bool {
-    return $this->writemultiline($this->stream, $message, $priority);
-  }
+    public function log(int $severity, string $message): bool
+    {
+        return $this->writemultiline($this->stream, $message, $severity);
+    }
 }

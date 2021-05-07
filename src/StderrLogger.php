@@ -18,12 +18,25 @@
 namespace VladimirVrzic\Simplogger;
 
 /**
- *  Logger that writes all messages to stderr 
- * 
- *  new StderrLogger ( bool $timestamp, bool $priority, string $ident )
+ *  Logger that writes all messages to stderr
+ *
+ *  new StderrLogger ( bool $includeTimestamp, bool $includeSeverity, string $ident )
  */
-class StderrLogger extends StdstreamLogger {
-  public function log(int $priority, string $message): bool {
-    return $this->writemultiline(STDERR, $message, $priority);
-  }
+class StderrLogger extends Logger
+{
+    /**
+     *  @param bool   $includeTimestamp  If TRUE, timestamp string is added to each message.
+     *  @param bool   $includeSeverity   If TRUE, severity string is added to each message.
+     *  @param string $ident      If not empty, "hostname [ident]" is added to each message.
+     */
+    function __construct(bool $includeTimestamp = false, bool $includeSeverity = false, string $ident = '') {
+        $this->includeTimestamp = $includeTimestamp;
+        $this->includeSeverity = $includeSeverity;
+        $this->ident = $ident;
+    }
+
+    public function log(int $severity, string $message): bool
+    {
+        return $this->writemultiline(STDERR, $message, $severity);
+    }
 }

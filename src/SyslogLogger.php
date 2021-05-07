@@ -41,10 +41,10 @@ class SyslogLogger extends Logger {
     closelog();
   }
 
-  public function log(int $priority, string $message): bool {
-    $r = FALSE;
+  public function log(int $severity, string $message): bool {
+    $r = false;
     foreach (explode(PHP_EOL, $message) as $line)
-      $r = syslog($priority, $line);
+      $r = syslog($severity, $line);
     return $r;
   }
 }
