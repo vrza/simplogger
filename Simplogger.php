@@ -18,7 +18,7 @@
 namespace Simplogger;
 
 abstract class Logger {
-  const PRIORITIES = [
+  const SEVERITIES = [
     0 => 'EMERG',
     1 => 'ALERT',
     2 => 'CRIT',
@@ -30,19 +30,19 @@ abstract class Logger {
   ];
 
   protected $stream = STDOUT;
-  protected $timestamp = FALSE;
+  protected $includeTimestamp = FALSE;
   protected $ident = '';
-  protected $priority = FALSE;
+  protected $includeSeverity = FALSE;
 
 
  /**
   *  Concrete loggers must implement
-  *  log ( $priority, $message )
+  *  log ( $severity, $message )
   *
-  *  @param int    $priority  Message priority
+  *  @param int    $severity  Message severity
   *  @param string $message   Message string
   */
-  abstract public function log(int $priority, string $message): bool;
+  abstract public function log(int $severity, string $message): bool;
 
   public function emerg(string $message): bool {
     return $this->log(LOG_EMERG, $message);
@@ -91,10 +91,10 @@ abstract class Logger {
   }
 
 
-  protected function write($fp, string $message, int $priority): int {
+  protected function write($fp, string $message, int $severity): int {
     // prepend any optional prefixes
     $prefix = ''; $sep = '';
-    if ($this->timestamp) {
+    if ($this->includeTimestamp) {
       $prefix .= $sep . date('Y-m-d H:i:s', time());
       $sep = ' ';
     }
@@ -103,8 +103,8 @@ abstract class Logger {
       $sep = ' ';
       $prefix .= $sep . '[' . $this->ident . ']';
     }
-    if ($this->priority) {
-      $prefix .= $sep . self::PRIORITIES[$priority];
+    if ($this->includeSeverity) {
+      $prefix .= $sep . self::SEVERITIES[$severity];
       $sep = ' ';
     }
     $message = "$prefix$sep$message";
@@ -116,81 +116,107 @@ abstract class Logger {
     return fwrite($fp, $message);
   }
 
-  protected function writemultiline($fp, string $message, int $priority): int {
+  protected function writemultiline($fp, string $message, int $severity): int {
     $r = FALSE;
     foreach (explode(PHP_EOL, $message) as $line) {
-      $r = $this->write($fp, $line, $priority);
+      $r = $this->write($fp, $line, $severity);
     }
     return $r;
   }
 }
 
 /**
- *  Intermediate abstract class, holding a shared construtor.
- */
-abstract class StdstreamLogger extends Logger {
- /**
-  *  @param bool   $timestamp  If TRUE, timestamp string is added to each message.
-  *  @param bool   $priority   If TRUE, priority string is added to each message.
-  *  @param string $ident      If not empty, "hostname [ident]" is added to each message.
-  */
-  function __construct(bool $timestamp = FALSE, bool $priority = FALSE, string $ident = '') {
-    $this->timestamp = $timestamp;
-    $this->priority = $priority;
-    $this->ident = $ident;
-  }
-}
-
-/**
  *  Logger that writes all messages to stdout
  *
- *  new StdoutLogger ( bool $timestamp, bool $priority, string $ident )
+ *  new StdoutLogger ( bool $includeTimestamp, bool $includeSeverity, string $ident )
  */
-class StdoutLogger extends StdstreamLogger {
-  public function log(int $priority, string $message): bool {
-    return $this->writemultiline(STDOUT, $message, $priority);
+class StdoutLogger extends Logger {
+  /**
+   *  @param bool   $includeTimestamp  If TRUE, a timestamp string is added to each message.
+   *  @param bool   $includeSeverity   If TRUE, a severity string is added to each message.
+   *  @param string $ident      If not empty, "hostname [ident]" is added to each message.
+   */
+  function __construct(bool $includeTimestamp = FALSE, bool $includeSeverity = FALSE, string $ident = '') {
+    $this->includeTimestamp = $includeTimestamp;
+    $this->includeSeverity = $includeSeverity;
+    $this->ident = $ident;
+  }
+
+  public function log(int $severity, string $message): bool {
+    return $this->writemultiline(STDOUT, $message, $severity);
   }
 }
 
 /**
  *  Logger that writes all messages to stderr
  *
- *  new StderrLogger ( bool $timestamp, bool $priority, string $ident )
+ *  new StderrLogger ( bool $includeTimestamp, bool $includeSeverity, string $ident )
  */
-class StderrLogger extends StdstreamLogger {
-  public function log(int $priority, string $message): bool {
-    return $this->writemultiline(STDERR, $message, $priority);
+class StderrLogger extends Logger {
+  /**
+   *  @param bool   $includeTimestamp  If TRUE, a timestamp string is added to each message.
+   *  @param bool   $includeSeverity   If TRUE, a severity string is added to each message.
+   *  @param string $ident      If not empty, "hostname [ident]" is added to each message.
+   */
+  function __construct(bool $includeTimestamp = FALSE, bool $includeSeverity = FALSE, string $ident = '') {
+    $this->includeTimestamp = $includeTimestamp;
+    $this->includeSeverity = $includeSeverity;
+    $this->ident = $ident;
+  }
+
+  public function log(int $severity, string $message): bool {
+    return $this->writemultiline(STDERR, $message, $severity);
   }
 }
 
 /**
- *  Logger that logs high priority messages (warnings and higher) to stderr
- *  while logging lower priority messages to stdout.
+ *  Logger that logs high severity messages (warnings and higher by default)
+ *  to stderr while logging lower severity messages to stdout.
  *
- *  new StdouterrLogger ( bool $timestamp, bool $priority, string $ident )
+ *  new StdouterrLogger ( int $stderrSeverity, bool $includeTimestamp, bool $includeSeverity, string $ident )
  */
-class StdouterrLogger extends StdstreamLogger {
-  public function log(int $priority, string $message): bool {
-    $fp = $priority <= LOG_WARNING ? STDERR : STDOUT;
-    return $this->writemultiline($fp, $message, $priority);
+class StdouterrLogger extends Logger {
+  private $stderrSeverity = LOG_WARNING;
+
+  /**
+    * @param int $stderrSeverity Messages at this and higher severity will go to stderr.
+    * @param bool $includeTimestamp If TRUE, timestamp string is added to each message.
+    * @param bool $includeSeverity If TRUE, severity string is added to each message.
+    * @param string $ident If not empty, "hostname [ident]" is added to each message.
+    */
+  function __construct(
+    int $stderrSeverity = LOG_WARNING,
+    bool $includeTimestamp = false,
+    bool $includeSeverity = false,
+    string $ident = ''
+  ) {
+    $this->stderrSeverity = $stderrSeverity;
+    $this->includeTimestamp = $includeTimestamp;
+    $this->includeSeverity = $includeSeverity;
+    $this->ident = $ident;
+  }
+
+  public function log(int $severity, string $message): bool {
+    $fp = $severity <= $this->stderrSeverity ? STDERR : STDOUT;
+    return $this->writemultiline($fp, $message, $severity);
   }
 }
 
 /**
  *  Logger that appends all messages to a file
  *
- *  new FileLogger ( string $file, bool $timestamp, bool $priority, string $ident )
+ *  new FileLogger ( string $file, bool $includeTimestamp, bool $includeSeverity, string $ident )
  */
 class FileLogger extends Logger {
  /**
   *  @param string $file       Append to log file $file.
-  *  @param bool   $timestamp  If TRUE, timestamp is added to each message.
-  *  @param bool   $priority   If TRUE, priority string is added to each message.
+  *  @param bool   $includeTimestamp  If TRUE, a timestamp string is added to each message.
+  *  @param bool   $includeSeverity   If TRUE, a severity string is added to each message.
   *  @param string $ident      If not empty, "hostname [ident]" is added to each message.
   */
-  function __construct(string $file, bool $timestamp = FALSE, bool $priority = FALSE, string $ident = '') {
-    $this->timestamp = $timestamp;
-    $this->priority = $priority;
+  function __construct(string $file, bool $includeTimestamp = FALSE, bool $includeSeverity = FALSE, string $ident = '') {
+    $this->includeTimestamp = $includeTimestamp;
+    $this->includeSeverity = $includeSeverity;
     $this->ident = $ident;
     $this->stream = fopen($file, 'a');
   }
@@ -200,8 +226,8 @@ class FileLogger extends Logger {
     fclose($this->stream);
   }
 
-  public function log(int $priority, string $message): bool {
-    return $this->writemultiline($this->stream, $message, $priority);
+  public function log(int $severity, string $message): bool {
+    return $this->writemultiline($this->stream, $message, $severity);
   }
 }
 
@@ -229,10 +255,10 @@ class SyslogLogger extends Logger {
     closelog();
   }
 
-  public function log(int $priority, string $message): bool {
+  public function log(int $severity, string $message): bool {
     $r = FALSE;
     foreach (explode(PHP_EOL, $message) as $line)
-      $r = syslog($priority, $line);
+      $r = syslog($severity, $line);
     return $r;
   }
 }
@@ -264,10 +290,10 @@ class RemoteSysLogger extends Logger {
     socket_close($this->sock);
   }
 
-  public function log(int $priority, string $message): bool {
+  public function log(int $severity, string $message): bool {
     $r = FALSE;
     foreach (explode(PHP_EOL, $message) as $line) {
-      $syslog_message = '<' . ($this->facility * 8 + $priority) . '>'
+      $syslog_message = '<' . ($this->facility * 8 + $severity) . '>'
          . date('M d H:i:s ')
          . gethostname() . ' '
          . $this->ident . ': ' . $line;
