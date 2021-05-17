@@ -1,5 +1,3 @@
-:source-highlighter: pygments
-
 = Simplogger: Simple PHP logging utility
 
 == Overview
@@ -35,7 +33,7 @@ $logger->notice('Hello world!');
 
 Add the following to your `composer.json`:
 
-[source,php]
+[source,json]
 ----
     "repositories": [
         {
