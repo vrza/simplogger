@@ -1,6 +1,6 @@
 <?php
 /*
-   Copyright 2017-2021 Vladimir Vrzić
+   Copyright 2017-2023 Vladimir Vrzić
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -26,6 +26,11 @@ namespace VladimirVrzic\Simplogger;
  */
 class RemoteSysLogger extends Logger
 {
+    private $facility;
+    private $host;
+    private $port;
+    private $sock;
+
     /**
      * @param string $ident The string $ident is added to each message.
      * @param int $facility What type of program is logging the message.
@@ -57,6 +62,6 @@ class RemoteSysLogger extends Logger
                 . $this->ident . ': ' . $line;
             $r = socket_sendto($this->sock, $syslog_message, strlen($syslog_message), 0, $this->host, $this->port);
         }
-        return $r;
+        return (bool)$r;
     }
 }

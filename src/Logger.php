@@ -1,6 +1,6 @@
 <?php
 /*
-   Copyright 2017-2021 Vladimir Vrzić
+   Copyright 2017-2023 Vladimir Vrzić
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -102,7 +102,7 @@ abstract class Logger
     }
 
 
-    protected function write($fp, string $message, int $severity): int
+    protected function write($fp, string $message, int $severity)
     {
         // prepend any optional prefixes
         $prefix = '';
@@ -129,7 +129,7 @@ abstract class Logger
         return fwrite($fp, $message);
     }
 
-    protected function writemultiline($fp, string $message, int $severity): int
+    protected function writemultiline($fp, string $message, int $severity)
     {
         $r = false;
         foreach (explode(PHP_EOL, $message) as $line) {

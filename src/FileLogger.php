@@ -1,6 +1,6 @@
 <?php
 /*
-   Copyright 2017-2021 Vladimir Vrzić
+   Copyright 2017-2023 Vladimir Vrzić
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -46,6 +46,6 @@ class FileLogger extends Logger
 
     public function log(int $severity, string $message): bool
     {
-        return $this->writemultiline($this->stream, $message, $severity);
+        return (bool)$this->writemultiline($this->stream, $message, $severity);
     }
 }
