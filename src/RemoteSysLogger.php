@@ -35,7 +35,7 @@ class RemoteSysLogger extends Logger
      * @param string $ident The string $ident is added to each message.
      * @param int $facility What type of program is logging the message.
      * @param string $host Syslog host (defaults to 127.0.0.1)
-     * @param string $port Syslog UDP port (defaults to 514)
+     * @param int $port Syslog UDP port (defaults to 514)
      */
     function __construct(string $ident, int $facility, string $host = '127.0.0.1', int $port = 514)
     {
