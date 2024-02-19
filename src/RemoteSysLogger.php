@@ -1,6 +1,6 @@
 <?php
 /*
-   Copyright 2017-2023 Vladimir Vrzić
+   Copyright 2017-2024 Vladimir Vrzić
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -26,6 +26,7 @@ namespace VladimirVrzic\Simplogger;
  */
 class RemoteSysLogger extends Logger
 {
+    private const MAX_UDP_DATA_LENGTH = 65023;
     private $facility;
     private $host;
     private $port;
@@ -60,7 +61,8 @@ class RemoteSysLogger extends Logger
                 . date('M d H:i:s ')
                 . gethostname() . ' '
                 . $this->ident . ': ' . $line;
-            $r = socket_sendto($this->sock, $syslog_message, strlen($syslog_message), 0, $this->host, $this->port);
+            $trimmed_message = substr($syslog_message, 0, self::MAX_UDP_DATA_LENGTH)
+            $r = socket_sendto($this->sock, $syslog_message, strlen($trimmed_message), 0, $this->host, $this->port);
         }
         return (bool)$r;
     }
