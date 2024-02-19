@@ -58,7 +58,7 @@ class RemoteSysLogger extends Logger
         $r = false;
         foreach (explode(PHP_EOL, $message) as $line) {
             $syslog_message = '<' . ($this->facility * 8 + $severity) . '>'
-                . date('M d H:i:s ')
+                . self::currentDateTime() . ' '
                 . gethostname() . ' '
                 . $this->ident . ': ' . $line;
             $trimmed_message = substr($syslog_message, 0, self::MAX_UDP_DATA_LENGTH);
