@@ -110,7 +110,7 @@ abstract class Logger
         $prefix = '';
         $sep = '';
         if ($this->includeTimestamp) {
-            $prefix .= $sep . self::currentDateTime());
+            $prefix .= $sep . self::currentDateTime();
             $sep = ' ';
         }
         if (!empty($this->ident)) {
