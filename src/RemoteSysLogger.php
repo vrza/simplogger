@@ -61,7 +61,7 @@ class RemoteSysLogger extends Logger
                 . date('M d H:i:s ')
                 . gethostname() . ' '
                 . $this->ident . ': ' . $line;
-            $trimmed_message = substr($syslog_message, 0, self::MAX_UDP_DATA_LENGTH)
+            $trimmed_message = substr($syslog_message, 0, self::MAX_UDP_DATA_LENGTH);
             $r = socket_sendto($this->sock, $syslog_message, strlen($trimmed_message), 0, $this->host, $this->port);
         }
         return (bool)$r;
