@@ -17,6 +17,8 @@
 
 namespace VladimirVrzic\Simplogger;
 
+use DateTime;
+
 abstract class Logger
 {
     const SEVERITIES = [
@@ -108,7 +110,7 @@ abstract class Logger
         $prefix = '';
         $sep = '';
         if ($this->includeTimestamp) {
-            $prefix .= $sep . date('Y-m-d H:i:s', time());
+            $prefix .= $sep . self::currentDateTime());
             $sep = ' ';
         }
         if (!empty($this->ident)) {
@@ -136,5 +138,11 @@ abstract class Logger
             $r = $this->write($fp, $line, $severity);
         }
         return $r;
+    }
+
+    private function currentDateTime()
+    {
+        $date = DateTime::createFromFormat('U.u', microtime(true));
+        return $date->format('Y-m-d H:i:s.u');
     }
 }
