@@ -143,6 +143,6 @@ abstract class Logger
     protected function currentDateTime()
     {
         $date = DateTime::createFromFormat('U.u', microtime(true));
-        return $date->format('Y-m-d H:i:s.u');
+        return $date->format("Y-m-d\\TH:i:s.vP"); // RFC 3339
     }
 }
