@@ -142,7 +142,8 @@ abstract class Logger
 
     protected function currentDateTime()
     {
-        $date = DateTime::createFromFormat('U.u', microtime(true));
+        $datetime = sprintf('%f', microtime(true));
+        $date = DateTime::createFromFormat('U.u', $datetime);
         return $date->format("Y-m-d\\TH:i:s.vP"); // RFC 3339
     }
 }
