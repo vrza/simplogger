@@ -31,19 +31,13 @@ $logger->notice('Hello world!');
 
 == Setup
 
-Add the following to your `composer.json`:
+=== Installation
 
-[source,json]
+Assuming you have PHP Composer installed, and that the `composer` executable is in your `$PATH`:
+
+[source,shell]
 ----
-    "repositories": [
-        {
-            "type": "vcs",
-            "url": "https://github.com/vrza/simplogger"
-         }
-    ],
-    "require": {
-        "vrza/simplogger": "dev-main"
-    }
+composer require vrza/simplogger
 ----
 
 === Log to local syslog
